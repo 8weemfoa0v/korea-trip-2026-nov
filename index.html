@@ -101,11 +101,11 @@
         </div>
         <div class="toolbar day-buttons">
           <button class="active" data-day="all">전체</button>
-          <button data-day="1">11/27</button>
-          <button data-day="2">11/28</button>
-          <button data-day="3">11/29</button>
-          <button data-day="4">11/30</button>
-          <button data-day="5">12/1</button>
+          <button data-day="1">11/27(금)</button>
+          <button data-day="2">11/28(토)</button>
+          <button data-day="3">11/29(일)</button>
+          <button data-day="4">11/30(월)</button>
+          <button data-day="5">12/1(화)</button>
         </div>
         <div class="toolbar">
           <button id="fitAll">전체 지도</button>
@@ -122,7 +122,7 @@
       </div>
 
       <div class="notice">
-        핵심 관광지 중심으로 구성한 4박 5일 일정입니다. 순천만습지는 갈대 데크 중심으로 보고, 오동도는 동백열차 이용을 포함했습니다. 교통·운영시간·기상은 출발 직전 다시 확인하세요.
+        주요 관광지를 중심으로 구성한 4박 5일 일정입니다. 순천만습지는 갈대 데크 중심, 오동도는 동백열차 이용으로 구성했습니다. 교통·운영시간·기상은 출발 전에 확인하세요.
       </div>
 
       <div id="days" class="days"></div>
@@ -139,46 +139,46 @@
     const TYPE_LABEL = {sight:'관광', meal:'식사', stay:'숙박', start:'출발/귀가'};
 
     const points = [
-      {id:'d1-start',day:1,date:'11/27 금',time:'07:00',name:'고양 출발',type:'start',lat:37.6584,lng:126.8320,note:'금요일 수도권 교통을 고려해 너무 늦지 않게 출발. 실제 출발지는 네이버 내비에서 현재 위치로 지정.',naver:'고양시청'},
-      {id:'independence',day:1,date:'11/27 금',time:'09:30~11:30',name:'천안 독립기념관',type:'sight',lat:36.7819356,lng:127.2304173,note:'핵심 전시 위주로 약 2시간 관람.',naver:'독립기념관 천안'},
-      {id:'cheonan-lunch',day:1,date:'11/27 금',time:'11:40~12:40',name:'천안 점심 — 병천/목천 권역',type:'meal',lat:36.7617,lng:127.2990,note:'주차가 편하고 독립기념관에서 가까운 식당을 우선. 최종 식당은 네이버 리뷰·인증 기준으로 선정.',naver:'독립기념관 근처 맛집'},
-      {id:'gyeonggijeon',day:1,date:'11/27 금',time:'15:20~16:20',name:'전주 경기전',type:'sight',lat:35.8142143,lng:127.1500366,note:'전주 핵심 관광지. 어진전과 중심 구역 위주로 관람.',naver:'전주 경기전'},
-      {id:'hanok',day:1,date:'11/27 금',time:'16:20~17:10',name:'한옥마을 중심거리 · 전동성당 외관',type:'sight',lat:35.8160,lng:127.1515,note:'태조로 중심으로 한옥마을과 전동성당 외관을 함께 관람.',naver:'전주 한옥마을'},
-      {id:'pungnam',day:1,date:'11/27 금',time:'17:10~17:25',name:'풍남문 — 짧게 관람',type:'sight',lat:35.8137060,lng:127.1486673,note:'남부시장 가는 길에 사진과 외관 위주로 짧게 봅니다.',naver:'전주 풍남문'},
-      {id:'nambu',day:1,date:'11/27 금',time:'17:30~19:00',name:'전주 남부시장 · 저녁',type:'meal',lat:35.8128283,lng:127.1475535,note:'금요일 야시장과 저녁을 함께 즐기는 일정.',naver:'전주 남부시장'},
-      {id:'jeonju-stay',day:1,date:'11/27 금',time:'19:00 이후',name:'전주 숙박 — 한옥마을 권역',type:'stay',lat:35.8158,lng:127.1520,note:'주차 가능한 한옥마을 권역 숙소를 우선.',naver:'전주 한옥마을 숙소 주차'},
+      {id:'d1-start',day:1,date:'11/27(금)',time:'07:00',name:'고양 출발',type:'start',lat:37.6584,lng:126.8320,note:'07:00 출발. 실제 출발지는 네이버 내비에서 현재 위치로 지정.',naver:'고양시청'},
+      {id:'independence',day:1,date:'11/27(금)',time:'09:30~11:30',name:'천안 독립기념관',type:'sight',lat:36.7819356,lng:127.2304173,note:'핵심 전시 위주로 약 2시간 관람.',naver:'독립기념관 천안'},
+      {id:'cheonan-lunch',day:1,date:'11/27(금)',time:'11:40~12:40',name:'천안 점심 — 병천/목천 권역',type:'meal',lat:36.7617,lng:127.2990,note:'독립기념관 인근 병천·목천 권역에서 점심.',naver:'독립기념관 근처 맛집'},
+      {id:'gyeonggijeon',day:1,date:'11/27(금)',time:'15:20~16:20',name:'전주 경기전',type:'sight',lat:35.8142143,lng:127.1500366,note:'전주 핵심 관광지. 어진전과 중심 구역 위주로 관람.',naver:'전주 경기전'},
+      {id:'hanok',day:1,date:'11/27(금)',time:'16:20~17:10',name:'한옥마을 중심거리 · 전동성당 외관',type:'sight',lat:35.8160,lng:127.1515,note:'태조로 중심으로 한옥마을과 전동성당 외관을 함께 관람.',naver:'전주 한옥마을'},
+      {id:'pungnam',day:1,date:'11/27(금)',time:'17:10~17:25',name:'풍남문 — 짧게 관람',type:'sight',lat:35.8137060,lng:127.1486673,note:'남부시장 가는 길에 사진과 외관 위주로 짧게 봅니다.',naver:'전주 풍남문'},
+      {id:'nambu',day:1,date:'11/27(금)',time:'17:30~19:00',name:'전주 남부시장 · 저녁',type:'meal',lat:35.8128283,lng:127.1475535,note:'금요일 야시장과 저녁을 함께 즐기는 일정.',naver:'전주 남부시장'},
+      {id:'jeonju-stay',day:1,date:'11/27(금)',time:'19:00 이후',name:'전주 숙박 — 한옥마을 권역',type:'stay',lat:35.8158,lng:127.1520,note:'한옥마을 권역 숙박. 주차 가능 여부 확인.',naver:'전주 한옥마을 숙소 주차'},
 
-      {id:'breakfast-jeonju',day:2,date:'11/28 토',time:'08:00~09:00',name:'전주 아침식사',type:'meal',lat:35.8150,lng:127.1490,note:'콩나물국밥 등으로 아침식사 후 순천으로 이동.',naver:'전주 한옥마을 콩나물국밥'},
-      {id:'suncheon-lunch',day:2,date:'11/28 토',time:'11:15~12:15',name:'순천 점심',type:'meal',lat:34.9460,lng:127.5200,note:'전주에서 09:30 전후 출발. 국가정원과 가까우며 주차 편한 식당을 선택.',naver:'순천만국가정원 맛집'},
-      {id:'garden',day:2,date:'11/28 토',time:'12:30~14:30',name:'순천만국가정원 — 핵심 구역만',type:'sight',lat:34.9300149,lng:127.5082389,note:'정원 전체보다는 입구 가까운 핵심 구역 위주로 약 2시간 관람.',naver:'순천만국가정원'},
-      {id:'wetland',day:2,date:'11/28 토',time:'15:00~16:30',name:'순천만습지 — 갈대 데크 중심',type:'sight',lat:34.884047,lng:127.512894,note:'자연생태관과 갈대 데크 중심으로 관람. 갈대열차 운행 시 이용 가능.',naver:'순천만습지'},
-      {id:'yeosu-stay-arrive',day:2,date:'11/28 토',time:'17:30 전후',name:'여수 도착 · 숙소 체크인',type:'stay',lat:34.7520,lng:127.7475,note:'체크인 후 저녁 일정 시작.',naver:'여수 오동도 숙소 주차'},
-      {id:'yeosu-dinner',day:2,date:'11/28 토',time:'18:15~19:15',name:'여수 저녁',type:'meal',lat:34.7388,lng:127.7400,note:'게장·서대회·아귀탕 후보. 주차가 편한 식당 우선.',naver:'여수 맛집'},
-      {id:'cable',day:2,date:'11/28 토',time:'19:30~20:45',name:'여수 해상케이블카 + 돌산공원',type:'sight',lat:34.7307968,lng:127.7393265,note:'케이블카에서 야경을 보고 돌산공원 전망 포인트 관람.',naver:'여수 해상케이블카 돌산탑승장'},
-      {id:'yeosu-stay',day:2,date:'11/28 토',time:'21:00 이후',name:'여수 숙박',type:'stay',lat:34.7520,lng:127.7475,note:'이순신광장은 다음 날 오전 일정에 포함.',naver:'여수 오동도 숙소'},
+      {id:'breakfast-jeonju',day:2,date:'11/28(토)',time:'08:00~09:00',name:'전주 아침식사',type:'meal',lat:35.8150,lng:127.1490,note:'콩나물국밥 등으로 아침식사 후 순천으로 이동.',naver:'전주 한옥마을 콩나물국밥'},
+      {id:'suncheon-lunch',day:2,date:'11/28(토)',time:'11:15~12:15',name:'순천 점심',type:'meal',lat:34.9460,lng:127.5200,note:'전주에서 09:30 전후 출발. 국가정원 인근에서 점심.',naver:'순천만국가정원 맛집'},
+      {id:'garden',day:2,date:'11/28(토)',time:'12:30~14:30',name:'순천만국가정원 — 핵심 구역만',type:'sight',lat:34.9300149,lng:127.5082389,note:'정원 전체보다는 입구 가까운 핵심 구역 위주로 약 2시간 관람.',naver:'순천만국가정원'},
+      {id:'wetland',day:2,date:'11/28(토)',time:'15:00~16:30',name:'순천만습지 — 갈대 데크 중심',type:'sight',lat:34.884047,lng:127.512894,note:'자연생태관과 갈대 데크 중심으로 관람. 갈대열차 운행 시 이용 가능.',naver:'순천만습지'},
+      {id:'yeosu-stay-arrive',day:2,date:'11/28(토)',time:'17:30 전후',name:'여수 도착 · 숙소 체크인',type:'stay',lat:34.7520,lng:127.7475,note:'체크인 후 저녁 일정 시작.',naver:'여수 오동도 숙소 주차'},
+      {id:'yeosu-dinner',day:2,date:'11/28(토)',time:'18:15~19:15',name:'여수 저녁',type:'meal',lat:34.7388,lng:127.7400,note:'게장·서대회·아귀탕 등 여수 음식으로 저녁.',naver:'여수 맛집'},
+      {id:'cable',day:2,date:'11/28(토)',time:'19:30~20:45',name:'여수 해상케이블카 + 돌산공원',type:'sight',lat:34.7307968,lng:127.7393265,note:'케이블카에서 야경을 보고 돌산공원 전망 포인트 관람.',naver:'여수 해상케이블카 돌산탑승장'},
+      {id:'yeosu-stay',day:2,date:'11/28(토)',time:'21:00 이후',name:'여수 숙박',type:'stay',lat:34.7520,lng:127.7475,note:'이순신광장은 다음 날 오전 일정에 포함.',naver:'여수 오동도 숙소'},
 
-      {id:'yeosu-breakfast',day:3,date:'11/29 일',time:'08:00~09:00',name:'여수 아침식사',type:'meal',lat:34.7500,lng:127.7450,note:'동백열차 첫 운행 시간에 맞춰 아침식사.',naver:'여수 엑스포역 아침식사'},
-      {id:'odongdo',day:3,date:'11/29 일',time:'09:30~10:45',name:'오동도 — 동백열차 이용',type:'sight',lat:34.7443624,lng:127.7641323,note:'11~2월 동백열차는 09:30부터 운행. 동백열차를 이용해 오동도 주요 구간 관람.',naver:'여수 오동도 동백열차'},
-      {id:'yisunshin',day:3,date:'11/29 일',time:'11:10~11:40',name:'이순신광장 — 짧게',type:'sight',lat:34.7396,lng:127.7363,note:'주차 후 광장 주변만 20~30분 정도 보고 점심으로 연결.',naver:'여수 이순신광장'},
-      {id:'yeosu-lunch',day:3,date:'11/29 일',time:'11:45~12:35',name:'여수 점심',type:'meal',lat:34.7390,lng:127.7380,note:'이순신광장 근처에서 식사 후 부산으로 이동.',naver:'여수 이순신광장 맛집'},
-      {id:'busan-stay-arrive',day:3,date:'11/29 일',time:'15:00 전후',name:'부산 도착 · 체크인',type:'stay',lat:35.1610,lng:129.1600,note:'첫날은 해운대권 숙소를 추천. 체크인 후 해운대 일정 시작.',naver:'부산 해운대 호텔 주차'},
-      {id:'haeundae',day:3,date:'11/29 일',time:'15:50~16:20',name:'해운대해수욕장',type:'sight',lat:35.1587,lng:129.1603,note:'해변과 주변 풍경을 약 30분 관람.',naver:'해운대해수욕장'},
-      {id:'cheongsapo',day:3,date:'11/29 일',time:'16:30~18:00',name:'블루라인파크 · 청사포',type:'sight',lat:35.1616552,lng:129.1938799,note:'스카이캡슐 또는 해변열차 이용. 사전예약 권장.',naver:'청사포 블루라인파크'},
-      {id:'gwangalli',day:3,date:'11/29 일',time:'18:30~20:30',name:'광안리 · 저녁 · 야경',type:'meal',lat:35.1532,lng:129.1187,note:'저녁식사 후 광안리 해변과 광안대교 야경 감상.',naver:'광안리해수욕장'},
-      {id:'busan-stay',day:3,date:'11/29 일',time:'21:00 이후',name:'부산 숙박',type:'stay',lat:35.1610,lng:129.1600,note:'부산 2박 같은 숙소 사용 권장.',naver:'부산 해운대 호텔'},
+      {id:'yeosu-breakfast',day:3,date:'11/29(일)',time:'08:00~09:00',name:'여수 아침식사',type:'meal',lat:34.7500,lng:127.7450,note:'동백열차 첫 운행 시간에 맞춰 아침식사.',naver:'여수 엑스포역 아침식사'},
+      {id:'odongdo',day:3,date:'11/29(일)',time:'09:30~10:45',name:'오동도 — 동백열차 이용',type:'sight',lat:34.7443624,lng:127.7641323,note:'11~2월 동백열차는 09:30부터 운행. 동백열차를 이용해 오동도 주요 구간 관람.',naver:'여수 오동도 동백열차'},
+      {id:'yisunshin',day:3,date:'11/29(일)',time:'11:10~11:40',name:'이순신광장 — 짧게',type:'sight',lat:34.7396,lng:127.7363,note:'주차 후 광장 주변만 20~30분 정도 보고 점심으로 연결.',naver:'여수 이순신광장'},
+      {id:'yeosu-lunch',day:3,date:'11/29(일)',time:'11:45~12:35',name:'여수 점심',type:'meal',lat:34.7390,lng:127.7380,note:'이순신광장 근처에서 식사 후 부산으로 이동.',naver:'여수 이순신광장 맛집'},
+      {id:'busan-stay-arrive',day:3,date:'11/29(일)',time:'15:00 전후',name:'부산 도착 · 체크인',type:'stay',lat:35.1610,lng:129.1600,note:'해운대권 체크인 후 해운대 일정 시작.',naver:'부산 해운대 호텔 주차'},
+      {id:'haeundae',day:3,date:'11/29(일)',time:'15:50~16:20',name:'해운대해수욕장',type:'sight',lat:35.1587,lng:129.1603,note:'해변과 주변 풍경을 약 30분 관람.',naver:'해운대해수욕장'},
+      {id:'cheongsapo',day:3,date:'11/29(일)',time:'16:30~18:00',name:'블루라인파크 · 청사포',type:'sight',lat:35.1616552,lng:129.1938799,note:'스카이캡슐 또는 해변열차 이용. 사전예약 여부 확인.',naver:'청사포 블루라인파크'},
+      {id:'gwangalli',day:3,date:'11/29(일)',time:'18:30~20:30',name:'광안리 · 저녁 · 야경',type:'meal',lat:35.1532,lng:129.1187,note:'저녁식사 후 광안리 해변과 광안대교 야경 감상.',naver:'광안리해수욕장'},
+      {id:'busan-stay',day:3,date:'11/29(일)',time:'21:00 이후',name:'부산 숙박',type:'stay',lat:35.1610,lng:129.1600,note:'같은 숙소에서 2박.',naver:'부산 해운대 호텔'},
 
-      {id:'busan-breakfast2',day:4,date:'11/30 월',time:'08:30~09:30',name:'부산 아침식사',type:'meal',lat:35.1610,lng:129.1600,note:'아침식사 후 송도로 이동.',naver:'해운대 아침식사'},
-      {id:'songdo',day:4,date:'11/30 월',time:'10:30~12:00',name:'송도해상케이블카 — 왕복',type:'sight',lat:35.0764,lng:129.0235,note:'송도해상케이블카 왕복 탑승 중심으로 관람.',naver:'부산 송도해상케이블카'},
-      {id:'jagalchi',day:4,date:'11/30 월',time:'12:20~14:00',name:'자갈치시장 · 남포동 점심',type:'meal',lat:35.0969,lng:129.0306,note:'자갈치시장과 BIFF광장 주변을 둘러보고 점심식사.',naver:'부산 자갈치시장'},
-      {id:'yongdusan',day:4,date:'11/30 월',time:'14:20~15:20',name:'용두산공원 · 부산타워 — 선택',type:'sight',lat:35.1014,lng:129.0324,note:'선택 일정. 용두산공원과 부산타워 전망 관람.',naver:'용두산공원 부산타워'},
-      {id:'busan-rest',day:4,date:'11/30 월',time:'16:00~18:00',name:'자유시간',type:'stay',lat:35.1610,lng:129.1600,note:'별도 일정을 정하지 않은 자유시간.',naver:'부산 해운대 호텔'},
-      {id:'busan-dinner',day:4,date:'11/30 월',time:'18:00~19:30',name:'부산 저녁',type:'meal',lat:35.1610,lng:129.1600,note:'숙소 근처에서 저녁식사.',naver:'해운대 맛집'},
-      {id:'busan-stay2',day:4,date:'11/30 월',time:'19:30 이후',name:'부산 2박째',type:'stay',lat:35.1610,lng:129.1600,note:'이날 일정 종료.',naver:'부산 해운대 호텔'},
+      {id:'busan-breakfast2',day:4,date:'11/30(월)',time:'08:30~09:30',name:'부산 아침식사',type:'meal',lat:35.1610,lng:129.1600,note:'아침식사 후 송도로 이동.',naver:'해운대 아침식사'},
+      {id:'songdo',day:4,date:'11/30(월)',time:'10:30~12:00',name:'송도해상케이블카 — 왕복',type:'sight',lat:35.0764,lng:129.0235,note:'송도해상케이블카 왕복 탑승 중심으로 관람.',naver:'부산 송도해상케이블카'},
+      {id:'jagalchi',day:4,date:'11/30(월)',time:'12:20~14:00',name:'자갈치시장 · 남포동 점심',type:'meal',lat:35.0969,lng:129.0306,note:'자갈치시장과 BIFF광장 주변을 둘러보고 점심식사.',naver:'부산 자갈치시장'},
+      {id:'yongdusan',day:4,date:'11/30(월)',time:'14:20~15:20',name:'용두산공원 · 부산타워 — 선택',type:'sight',lat:35.1014,lng:129.0324,note:'선택 일정. 용두산공원과 부산타워 전망 관람.',naver:'용두산공원 부산타워'},
+      {id:'busan-rest',day:4,date:'11/30(월)',time:'16:00~18:00',name:'자유시간',type:'stay',lat:35.1610,lng:129.1600,note:'별도 일정을 정하지 않은 자유시간.',naver:'부산 해운대 호텔'},
+      {id:'busan-dinner',day:4,date:'11/30(월)',time:'18:00~19:30',name:'부산 저녁',type:'meal',lat:35.1610,lng:129.1600,note:'숙소 근처에서 저녁식사.',naver:'해운대 맛집'},
+      {id:'busan-stay2',day:4,date:'11/30(월)',time:'19:30 이후',name:'부산 2박째',type:'stay',lat:35.1610,lng:129.1600,note:'이날 일정 종료.',naver:'부산 해운대 호텔'},
 
-      {id:'busan-breakfast',day:5,date:'12/1 화',time:'07:30~08:20',name:'부산 아침식사',type:'meal',lat:35.1610,lng:129.1600,note:'08:30 전후 안동으로 출발.',naver:'해운대 아침식사'},
-      {id:'hahoe',day:5,date:'12/1 화',time:'11:15~12:45',name:'안동 하회마을',type:'sight',lat:36.5396,lng:128.5183,note:'공용주차장~마을 셔틀버스는 무료. 만송정과 중심 고택 위주로 약 1시간 30분 관람.',naver:'안동 하회마을'},
-      {id:'andong-lunch',day:5,date:'12/1 화',time:'12:50~13:50',name:'안동 점심',type:'meal',lat:36.5390,lng:128.5200,note:'하회마을 주변에서 식사 후 바로 고양으로 출발.',naver:'안동 하회마을 맛집'},
-      {id:'home',day:5,date:'12/1 화',time:'17:00~18:00 예상',name:'고양 귀가',type:'start',lat:37.6584,lng:126.8320,note:'수도권 교통에 따라 도착시간 변동. 하회별신굿탈놀이는 14시 공연이라 이번 기본 일정에서는 제외.',naver:'고양시청'}
+      {id:'busan-breakfast',day:5,date:'12/1(화)',time:'07:30~08:20',name:'부산 아침식사',type:'meal',lat:35.1610,lng:129.1600,note:'08:30 전후 안동으로 출발.',naver:'해운대 아침식사'},
+      {id:'hahoe',day:5,date:'12/1(화)',time:'11:15~12:45',name:'안동 하회마을',type:'sight',lat:36.5396,lng:128.5183,note:'공용주차장~마을 셔틀버스는 무료. 만송정과 중심 고택 위주로 약 1시간 30분 관람.',naver:'안동 하회마을'},
+      {id:'andong-lunch',day:5,date:'12/1(화)',time:'12:50~13:50',name:'안동 점심',type:'meal',lat:36.5390,lng:128.5200,note:'하회마을 주변에서 식사 후 바로 고양으로 출발.',naver:'안동 하회마을 맛집'},
+      {id:'home',day:5,date:'12/1(화)',time:'17:00~18:00 예상',name:'고양 귀가',type:'start',lat:37.6584,lng:126.8320,note:'수도권 교통에 따라 도착시간 변동. 하회별신굿탈놀이는 14시 공연이라 이번 기본 일정에서는 제외.',naver:'고양시청'}
     ];
 
     const map = L.map('map', {zoomControl:true}).setView([36.0, 127.8], 7);
@@ -301,11 +301,11 @@
 
     const daysEl = document.getElementById('days');
     const dayNames = {
-      1:'11/27 금 · 고양 → 천안 → 전주',
-      2:'11/28 토 · 전주 → 순천 → 여수',
-      3:'11/29 일 · 여수 → 부산',
-      4:'11/30 월 · 부산 관광',
-      5:'12/1 화 · 부산 → 안동 → 고양'
+      1:'11/27(금) · 고양 → 천안 → 전주',
+      2:'11/28(토) · 전주 → 순천 → 여수',
+      3:'11/29(일) · 여수 → 부산',
+      4:'11/30(월) · 부산 관광',
+      5:'12/1(화) · 부산 → 안동 → 고양'
     };
 
     function renderList() {
