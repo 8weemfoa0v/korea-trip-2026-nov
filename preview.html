@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>2026 늦가을 자동차 여행 — 고양·천안·전주·순천·여수·부산·안동</title>
+  <link rel="preconnect" href="https://unpkg.com">
+  <link rel="preconnect" href="https://tile.openstreetmap.org">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <style>
+    :root {
+      --bg: #f5f6f8;
+      --panel: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --accent: #0f766e;
+      --d1: #c2410c;
+      --d2: #15803d;
+      --d3: #0369a1;
+      --d4: #7e22ce;
+      --d5: #b91c1c;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", Arial, sans-serif; color: var(--text); background: var(--bg); }
+    body { overflow: hidden; }
+    .app { display: grid; grid-template-columns: minmax(340px, 38%) 1fr; height: 100vh; }
+    .sidebar { background: var(--panel); border-right: 1px solid var(--border); overflow-y: auto; }
+    .header { position: sticky; top: 0; z-index: 20; background: rgba(255,255,255,.96); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); padding: 18px 18px 14px; }
+    h1 { font-size: 20px; line-height: 1.35; margin: 0 0 6px; }
+    .sub { font-size: 13px; color: var(--muted); line-height: 1.5; }
+    .summary { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+    .pill { font-size: 12px; padding: 5px 8px; border-radius: 999px; background: #f3f4f6; border: 1px solid var(--border); }
+    .toolbar { display: flex; gap: 7px; flex-wrap: wrap; margin-top: 12px; }
+    button { border: 1px solid var(--border); background: #fff; color: var(--text); border-radius: 8px; padding: 7px 9px; cursor: pointer; font-size: 12px; }
+    button:hover { background: #f9fafb; }
+    button.active { background: #111827; color: #fff; border-color: #111827; }
+    .day-buttons button[data-day="1"].active { background: var(--d1); border-color: var(--d1); }
+    .day-buttons button[data-day="2"].active { background: var(--d2); border-color: var(--d2); }
+    .day-buttons button[data-day="3"].active { background: var(--d3); border-color: var(--d3); }
+    .day-buttons button[data-day="4"].active { background: var(--d4); border-color: var(--d4); }
+    .day-buttons button[data-day="5"].active { background: var(--d5); border-color: var(--d5); }
+    .filters { padding: 10px 18px 0; display: flex; gap: 12px; flex-wrap: wrap; font-size: 12px; color: var(--muted); }
+    .filters label { display: inline-flex; gap: 5px; align-items: center; cursor: pointer; }
+    .days { padding: 10px 14px 28px; }
+    .day { margin: 8px 0 18px; }
+    .day-title { display: flex; align-items: baseline; justify-content: space-between; padding: 7px 5px; border-bottom: 1px solid var(--border); margin-bottom: 5px; }
+    .day-title strong { font-size: 15px; }
+    .day-title span { font-size: 12px; color: var(--muted); }
+    .item { display: grid; grid-template-columns: 62px 1fr; gap: 8px; padding: 9px 7px; border-radius: 9px; cursor: pointer; border: 1px solid transparent; }
+    .item:hover { background: #f9fafb; border-color: #f3f4f6; }
+    .item.hidden { display: none; }
+    .time { font-size: 12px; color: var(--muted); padding-top: 2px; }
+    .name-row { display: flex; gap: 7px; align-items: center; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; flex: 0 0 10px; }
+    .name { font-weight: 650; font-size: 13px; line-height: 1.35; }
+    .meta { font-size: 11px; color: var(--muted); margin-top: 3px; line-height: 1.45; }
+    .walk-badge { display:inline-block; margin-left:6px; padding:2px 6px; border-radius:999px; font-size:10px; font-weight:700; vertical-align:1px; }
+    .walk-low { background:#ecfdf5; color:#166534; border:1px solid #bbf7d0; }
+    .walk-mid { background:#fffbeb; color:#92400e; border:1px solid #fde68a; }
+    main { min-width: 0; min-height: 0; height: 100%; }
+    #map { height: 100%; width: 100%; min-height: 0; background: #e5e7eb; }
+    .leaflet-popup-content-wrapper { border-radius: 10px; }
+    .popup { min-width: 220px; }
+    .popup h3 { margin: 0 0 6px; font-size: 15px; }
+    .popup .when { font-size: 12px; color: var(--muted); margin-bottom: 7px; }
+    .popup p { margin: 6px 0 10px; font-size: 12px; line-height: 1.55; }
+    .popup a { display: inline-block; text-decoration: none; font-size: 12px; padding: 7px 9px; border-radius: 7px; background: #03c75a; color: #fff; font-weight: 700; }
+    .popup .small { font-size: 11px; color: var(--muted); margin-top: 7px; }
+    .legend { background: rgba(255,255,255,.94); padding: 9px 10px; border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,.12); font-size: 11px; line-height: 1.7; }
+    .legend-row { display: flex; align-items: center; gap: 6px; }
+    .legend-swatch { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+    .notice { margin: 10px 18px 18px; padding: 11px 12px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 9px; font-size: 11px; line-height: 1.55; color: #713f12; }
+    .route-note { position: absolute; right: 12px; bottom: 12px; z-index: 500; background: rgba(255,255,255,.93); border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; font-size: 11px; color: var(--muted); max-width: 290px; }
+    @media (max-width: 820px) {
+      body { overflow: auto; }
+      .app { grid-template-columns: 1fr; grid-template-rows: 48vh 52vh; height: 100vh; }
+      .sidebar { border-right: 0; border-bottom: 1px solid var(--border); }
+      #map { min-height: 52vh; }
+      .header { position: static; }
+    }
+    @media print {
+      body { overflow: visible; }
+      .app { display: block; height: auto; }
+      .sidebar { overflow: visible; border: 0; }
+      #map { height: 520px; margin-top: 16px; }
+      .toolbar, .filters, .route-note { display: none !important; }
+      .header { position: static; }
+      .item.hidden { display: grid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="header">
+        <h1>2026 늦가을 4박 5일 자동차 여행</h1>
+        <div class="sub">고양 → 천안 → 전주 → 순천 → 여수 → 부산 → 안동 → 고양<br>2026.11.27(금) ~ 12.01(화)</div>
+        <div class="summary">
+          <span class="pill">4박 5일</span><span class="pill">자동차 이동</span><span class="pill">11월 말</span>
+        </div>
+        <div class="toolbar day-buttons">
+          <button class="active" data-day="all">전체</button>
+          <button data-day="1">11/27(금)</button>
+          <button data-day="2">11/28(토)</button>
+          <button data-day="3">11/29(일)</button>
+          <button data-day="4">11/30(월)</button>
+          <button data-day="5">12/1(화)</button>
+        </div>
+        <div class="toolbar">
+          <button id="fitAll">전체 지도</button>
+          <button id="toggleRoutes">경로선 숨기기</button>
+          <button onclick="window.print()">인쇄 / PDF</button>
+        </div>
+      </div>
+
+      <div class="filters">
+        <label><input type="checkbox" data-type="sight" checked> 관광</label>
+        <label><input type="checkbox" data-type="meal" checked> 식사</label>
+        <label><input type="checkbox" data-type="stay" checked> 숙박</label>
+        <label><input type="checkbox" data-type="start" checked> 출발/귀가</label>
+      </div>
+
+      <div class="notice">
+        주요 관광지를 중심으로 구성한 4박 5일 일정입니다. 순천만습지는 갈대 데크 중심, 오동도는 동백열차 이용으로 구성했습니다. 교통·운영시간·기상은 출발 전에 확인하세요.
+      </div>
+
+      <div id="days" class="days"></div>
+    </aside>
+    <main style="position:relative; min-width:0;">
+      <div id="map"></div>
+      <div class="route-note">지도 경로선은 일정 순서를 보여주는 개략 경로입니다. 실제 이동은 네이버지도 내비게이션의 실시간 경로를 이용하세요.</div>
+    </main>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script>
+    const COLORS = {1:'#c2410c',2:'#15803d',3:'#0369a1',4:'#7e22ce',5:'#b91c1c'};
+    const TYPE_LABEL = {sight:'관광', meal:'식사', stay:'숙박', start:'출발/귀가'};
+
+    const points = [
+      {id:'d1-start',day:1,date:'11/27(금)',time:'07:00',name:'고양 출발',type:'start',lat:37.6584,lng:126.8320,note:'07:00 출발. 실제 출발지는 네이버 내비에서 현재 위치로 지정.',naver:'고양시청'},
+      {id:'independence',day:1,date:'11/27(금)',time:'09:30~11:30',name:'천안 독립기념관',type:'sight',lat:36.7819356,lng:127.2304173,note:'핵심 전시 위주로 약 2시간 관람.',naver:'독립기념관 천안'},
+      {id:'cheonan-lunch',day:1,date:'11/27(금)',time:'11:40~12:40',name:'천안 점심 — 병천/목천 권역',type:'meal',lat:36.7617,lng:127.2990,note:'독립기념관 인근 병천·목천 권역에서 점심.',naver:'독립기념관 근처 맛집'},
+      {id:'gyeonggijeon',day:1,date:'11/27(금)',time:'15:20~16:20',name:'전주 경기전',type:'sight',lat:35.8142143,lng:127.1500366,note:'전주 핵심 관광지. 어진전과 중심 구역 위주로 관람.',naver:'전주 경기전'},
+      {id:'hanok',day:1,date:'11/27(금)',time:'16:20~17:10',name:'한옥마을 중심거리 · 전동성당 외관',type:'sight',lat:35.8160,lng:127.1515,note:'태조로 중심으로 한옥마을과 전동성당 외관을 함께 관람.',naver:'전주 한옥마을'},
+      {id:'pungnam',day:1,date:'11/27(금)',time:'17:10~17:25',name:'풍남문 — 짧게 관람',type:'sight',lat:35.8137060,lng:127.1486673,note:'남부시장 가는 길에 사진과 외관 위주로 짧게 봅니다.',naver:'전주 풍남문'},
+      {id:'nambu',day:1,date:'11/27(금)',time:'17:30~19:00',name:'전주 남부시장 · 저녁',type:'meal',lat:35.8128283,lng:127.1475535,note:'금요일 야시장과 저녁을 함께 즐기는 일정.',naver:'전주 남부시장'},
+      {id:'jeonju-stay',day:1,date:'11/27(금)',time:'19:00 이후',name:'라한호텔 전주 숙박',type:'stay',lat:35.8158,lng:127.1520,note:'전북특별자치도 전주시 완산구 기린대로 85. 한옥마을 바로 앞.',naver:'라한호텔 전주'},
+
+      {id:'breakfast-jeonju',day:2,date:'11/28(토)',time:'08:00~09:00',name:'전주 아침식사',type:'meal',lat:35.8150,lng:127.1490,note:'콩나물국밥 등으로 아침식사 후 순천으로 이동.',naver:'전주 한옥마을 콩나물국밥'},
+      {id:'suncheon-lunch',day:2,date:'11/28(토)',time:'11:15~12:15',name:'순천 점심',type:'meal',lat:34.9460,lng:127.5200,note:'전주에서 09:30 전후 출발. 국가정원 인근에서 점심.',naver:'순천만국가정원 맛집'},
+      {id:'garden',day:2,date:'11/28(토)',time:'12:30~14:30',name:'순천만국가정원 — 핵심 구역만',type:'sight',lat:34.9300149,lng:127.5082389,note:'정원 전체보다는 입구 가까운 핵심 구역 위주로 약 2시간 관람.',naver:'순천만국가정원'},
+      {id:'wetland',day:2,date:'11/28(토)',time:'15:00~16:30',name:'순천만습지 — 갈대 데크 중심',type:'sight',lat:34.884047,lng:127.512894,note:'자연생태관과 갈대 데크 중심으로 관람. 갈대열차 운행 시 이용 가능.',naver:'순천만습지'},
+      {id:'yeosu-stay-arrive',day:2,date:'11/28(토)',time:'17:30 전후',name:'여수 도착 · 숙소 체크인',type:'stay',lat:34.7520,lng:127.7475,note:'체크인 후 저녁 일정 시작.',naver:'여수 오동도 숙소 주차'},
+      {id:'yeosu-dinner',day:2,date:'11/28(토)',time:'18:15~19:15',name:'여수 저녁',type:'meal',lat:34.7388,lng:127.7400,note:'게장·서대회·아귀탕 등 여수 음식으로 저녁.',naver:'여수 맛집'},
+      {id:'cable',day:2,date:'11/28(토)',time:'19:30~20:45',name:'여수 해상케이블카 + 돌산공원',type:'sight',lat:34.7307968,lng:127.7393265,note:'케이블카에서 야경을 보고 돌산공원 전망 포인트 관람.',naver:'여수 해상케이블카 돌산탑승장'},
+      {id:'yeosu-stay',day:2,date:'11/28(토)',time:'21:00 이후',name:'여수 숙박',type:'stay',lat:34.7520,lng:127.7475,note:'이순신광장은 다음 날 오전 일정에 포함.',naver:'여수 오동도 숙소'},
+
+      {id:'yeosu-breakfast',day:3,date:'11/29(일)',time:'08:00~09:00',name:'여수 아침식사',type:'meal',lat:34.7500,lng:127.7450,note:'동백열차 첫 운행 시간에 맞춰 아침식사.',naver:'여수 엑스포역 아침식사'},
+      {id:'odongdo',day:3,date:'11/29(일)',time:'09:30~10:45',name:'오동도 — 동백열차 이용',type:'sight',lat:34.7443624,lng:127.7641323,note:'11~2월 동백열차는 09:30부터 운행. 동백열차를 이용해 오동도 주요 구간 관람.',naver:'여수 오동도 동백열차'},
+      {id:'yisunshin',day:3,date:'11/29(일)',time:'11:10~11:40',name:'이순신광장 — 짧게',type:'sight',lat:34.7396,lng:127.7363,note:'주차 후 광장 주변만 20~30분 정도 보고 점심으로 연결.',naver:'여수 이순신광장'},
+      {id:'yeosu-lunch',day:3,date:'11/29(일)',time:'11:45~12:35',name:'여수 점심',type:'meal',lat:34.7390,lng:127.7380,note:'이순신광장 근처에서 식사 후 부산으로 이동.',naver:'여수 이순신광장 맛집'},
+      {id:'busan-stay-arrive',day:3,date:'11/29(일)',time:'15:00 전후',name:'부산 도착 · 체크인',type:'stay',lat:35.1610,lng:129.1600,note:'해운대권 체크인 후 해운대 일정 시작.',naver:'부산 해운대 호텔 주차'},
+      {id:'haeundae',day:3,date:'11/29(일)',time:'15:50~16:20',name:'해운대해수욕장',type:'sight',lat:35.1587,lng:129.1603,note:'해변과 주변 풍경을 약 30분 관람.',naver:'해운대해수욕장'},
+      {id:'cheongsapo',day:3,date:'11/29(일)',time:'16:30~18:00',name:'블루라인파크 · 청사포',type:'sight',lat:35.1616552,lng:129.1938799,note:'스카이캡슐 또는 해변열차 이용. 사전예약 여부 확인.',naver:'청사포 블루라인파크'},
+      {id:'gwangalli',day:3,date:'11/29(일)',time:'18:30~20:30',name:'광안리 · 저녁 · 야경',type:'meal',lat:35.1532,lng:129.1187,note:'저녁식사 후 광안리 해변과 광안대교 야경 감상.',naver:'광안리해수욕장'},
+      {id:'busan-stay',day:3,date:'11/29(일)',time:'21:00 이후',name:'부산 숙박',type:'stay',lat:35.1610,lng:129.1600,note:'같은 숙소에서 2박.',naver:'부산 해운대 호텔'},
+
+      {id:'busan-breakfast2',day:4,date:'11/30(월)',time:'08:30~09:30',name:'부산 아침식사',type:'meal',lat:35.1610,lng:129.1600,note:'아침식사 후 송도로 이동.',naver:'해운대 아침식사'},
+      {id:'songdo',day:4,date:'11/30(월)',time:'10:30~12:00',name:'송도해상케이블카 — 왕복',type:'sight',lat:35.0764,lng:129.0235,note:'송도해상케이블카 왕복 탑승 중심으로 관람.',naver:'부산 송도해상케이블카'},
+      {id:'jagalchi',day:4,date:'11/30(월)',time:'12:20~14:00',name:'자갈치시장 · 남포동 점심',type:'meal',lat:35.0969,lng:129.0306,note:'자갈치시장과 BIFF광장 주변을 둘러보고 점심식사.',naver:'부산 자갈치시장'},
+      {id:'yongdusan',day:4,date:'11/30(월)',time:'14:20~15:20',name:'용두산공원 · 부산타워 — 선택',type:'sight',lat:35.1014,lng:129.0324,note:'선택 일정. 용두산공원과 부산타워 전망 관람.',naver:'용두산공원 부산타워'},
+      {id:'busan-rest',day:4,date:'11/30(월)',time:'16:00~18:00',name:'자유시간',type:'stay',lat:35.1610,lng:129.1600,note:'별도 일정을 정하지 않은 자유시간.',naver:'부산 해운대 호텔'},
+      {id:'busan-dinner',day:4,date:'11/30(월)',time:'18:00~19:30',name:'부산 저녁',type:'meal',lat:35.1610,lng:129.1600,note:'숙소 근처에서 저녁식사.',naver:'해운대 맛집'},
+      {id:'busan-stay2',day:4,date:'11/30(월)',time:'19:30 이후',name:'부산 2박째',type:'stay',lat:35.1610,lng:129.1600,note:'이날 일정 종료.',naver:'부산 해운대 호텔'},
+
+      {id:'busan-breakfast',day:5,date:'12/1(화)',time:'07:30~08:20',name:'부산 아침식사',type:'meal',lat:35.1610,lng:129.1600,note:'08:30 전후 안동으로 출발.',naver:'해운대 아침식사'},
+      {id:'hahoe',day:5,date:'12/1(화)',time:'11:15~12:45',name:'안동 하회마을',type:'sight',lat:36.5396,lng:128.5183,note:'공용주차장~마을 셔틀버스는 무료. 만송정과 중심 고택 위주로 약 1시간 30분 관람.',naver:'안동 하회마을'},
+      {id:'andong-lunch',day:5,date:'12/1(화)',time:'12:50~13:50',name:'안동 점심',type:'meal',lat:36.5390,lng:128.5200,note:'하회마을 주변에서 식사 후 바로 고양으로 출발.',naver:'안동 하회마을 맛집'},
+      {id:'home',day:5,date:'12/1(화)',time:'17:00~18:00 예상',name:'고양 귀가',type:'start',lat:37.6584,lng:126.8320,note:'수도권 교통에 따라 도착시간 변동. 하회별신굿탈놀이는 14시 공연이라 이번 기본 일정에서는 제외.',naver:'고양시청'}
+    ];
+
+    const map = L.map('map', {zoomControl:true}).setView([36.0, 127.8], 7);
+
+    const osmUrl = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+    const osmOptions = {
+      maxZoom: 19,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors',
+      updateWhenIdle: true,
+      referrerPolicy: 'strict-origin-when-cross-origin'
+    };
+
+    // OSM requires a Referer for web pages. Pages opened directly as file:// cannot
+    // provide one, so identify this local map with X-Requested-With instead.
+    // OSM explicitly permits this fallback for local/native-style clients.
+    const LocalOsmTileLayer = L.TileLayer.extend({
+      createTile: function(coords, done) {
+        const tile = document.createElement('img');
+        tile.alt = '';
+        tile.setAttribute('role', 'presentation');
+        tile.referrerPolicy = 'strict-origin-when-cross-origin';
+
+        const controller = new AbortController();
+        tile._osmAbortController = controller;
+
+        fetch(this.getTileUrl(coords), {
+          mode: 'cors',
+          cache: 'default',
+          signal: controller.signal,
+          headers: {
+            'X-Requested-With': 'KoreaRoadTripMap-2026-11'
+          }
+        })
+          .then(response => {
+            if (!response.ok) throw new Error('OSM tile HTTP ' + response.status);
+            return response.blob();
+          })
+          .then(blob => {
+            const objectUrl = URL.createObjectURL(blob);
+            tile._osmObjectUrl = objectUrl;
+            tile.onload = () => {
+              URL.revokeObjectURL(objectUrl);
+              tile._osmObjectUrl = null;
+              done(null, tile);
+            };
+            tile.onerror = event => {
+              URL.revokeObjectURL(objectUrl);
+              tile._osmObjectUrl = null;
+              done(event, tile);
+            };
+            tile.src = objectUrl;
+          })
+          .catch(error => {
+            if (error.name !== 'AbortError') {
+              console.error('OSM tile load failed:', error);
+              done(error, tile);
+            }
+          });
+
+        return tile;
+      },
+
+      _removeTile: function(key) {
+        const entry = this._tiles[key];
+        if (entry && entry.el) {
+          if (entry.el._osmAbortController) entry.el._osmAbortController.abort();
+          if (entry.el._osmObjectUrl) URL.revokeObjectURL(entry.el._osmObjectUrl);
+        }
+        L.GridLayer.prototype._removeTile.call(this, key);
+      }
+    });
+
+    const baseTiles = (location.protocol === 'file:'
+      ? new LocalOsmTileLayer(osmUrl, osmOptions)
+      : L.tileLayer(osmUrl, osmOptions)
+    ).addTo(map);
+
+    const markerById = {};
+    const routeByDay = {};
+    let activeDay = 'all';
+    let routesVisible = true;
+    const typeEnabled = {sight:true, meal:true, stay:true, start:true};
+
+    function naverUrl(q) {
+      return 'https://map.naver.com/p/search/' + encodeURIComponent(q);
+    }
+
+    function markerStyle(day, type) {
+      const fill = COLORS[day];
+      const radius = type === 'stay' ? 9 : type === 'meal' ? 8 : type === 'start' ? 9 : 7;
+      return {radius, color:'#ffffff', weight:2, fillColor:fill, fillOpacity:type==='stay'?.75:.95};
+    }
+
+    points.forEach(p => {
+      const m = L.circleMarker([p.lat, p.lng], markerStyle(p.day, p.type));
+      const html = `<div class="popup">
+        <h3>${p.name}</h3>
+        <div class="when">${p.date} · ${p.time} · ${TYPE_LABEL[p.type]}</div>
+        <p>${p.note}</p>
+        <a href="${naverUrl(p.naver)}" target="_blank" rel="noopener">네이버지도에서 열기</a>
+        <div class="small">※ 실제 내비 경로는 네이버지도에서 현재 위치/출발지를 지정하세요.</div>
+      </div>`;
+      m.bindPopup(html);
+      m.addTo(map);
+      markerById[p.id] = m;
+    });
+
+    for (let d=1; d<=5; d++) {
+      const coords = points.filter(p=>p.day===d).map(p=>[p.lat,p.lng]);
+      routeByDay[d] = L.polyline(coords, {color:COLORS[d], weight:3, opacity:.65, dashArray:'8 7'}).addTo(map);
+    }
+
+    const legend = L.control({position:'topright'});
+    legend.onAdd = () => {
+      const div = L.DomUtil.create('div','legend');
+      div.innerHTML = [1,2,3,4,5].map(d=>`<div class="legend-row"><span class="legend-swatch" style="background:${COLORS[d]}"></span> ${d}일차</div>`).join('');
+      return div;
+    };
+    legend.addTo(map);
+
+    const daysEl = document.getElementById('days');
+    const dayNames = {
+      1:'11/27(금) · 고양 → 천안 → 전주',
+      2:'11/28(토) · 전주 → 순천 → 여수',
+      3:'11/29(일) · 여수 → 부산',
+      4:'11/30(월) · 부산 관광',
+      5:'12/1(화) · 부산 → 안동 → 고양'
+    };
+
+    function renderList() {
+      daysEl.innerHTML = '';
+      for (let d=1; d<=5; d++) {
+        const section = document.createElement('section');
+        section.className = 'day';
+        section.dataset.day = d;
+        const items = points.filter(p=>p.day===d);
+        const title = document.createElement('div');
+        title.className = 'day-title';
+        title.innerHTML = `<strong>${d}일차</strong><span>${dayNames[d]}</span>`;
+        section.appendChild(title);
+        items.forEach(p => {
+          const el = document.createElement('div');
+          el.className = 'item';
+          el.dataset.id = p.id;
+          el.dataset.type = p.type;
+          el.innerHTML = `<div class="time">${p.time}</div><div><div class="name-row"><span class="dot" style="background:${COLORS[d]}"></span><span class="name">${p.name}</span></div><div class="meta">${TYPE_LABEL[p.type]} · ${p.note}</div></div>`;
+          el.addEventListener('click', () => {
+            map.setView([p.lat,p.lng], p.type==='start'?10:14, {animate:true});
+            markerById[p.id].openPopup();
+          });
+          section.appendChild(el);
+        });
+        daysEl.appendChild(section);
+      }
+    }
+    renderList();
+
+    function updateVisibility() {
+      points.forEach(p => {
+        const visible = (activeDay==='all' || Number(activeDay)===p.day) && typeEnabled[p.type];
+        const m = markerById[p.id];
+        if (visible && !map.hasLayer(m)) m.addTo(map);
+        if (!visible && map.hasLayer(m)) map.removeLayer(m);
+      });
+      for (let d=1; d<=5; d++) {
+        const show = routesVisible && (activeDay==='all' || Number(activeDay)===d);
+        if (show && !map.hasLayer(routeByDay[d])) routeByDay[d].addTo(map);
+        if (!show && map.hasLayer(routeByDay[d])) map.removeLayer(routeByDay[d]);
+      }
+      document.querySelectorAll('.day').forEach(sec => {
+        sec.style.display = (activeDay==='all' || Number(activeDay)===Number(sec.dataset.day)) ? '' : 'none';
+      });
+      document.querySelectorAll('.item').forEach(el => {
+        el.classList.toggle('hidden', !typeEnabled[el.dataset.type]);
+      });
+      fitVisible();
+    }
+
+    function fitVisible() {
+      const visiblePoints = points.filter(p => (activeDay==='all' || Number(activeDay)===p.day) && typeEnabled[p.type]);
+      if (!visiblePoints.length) return;
+      const bounds = L.latLngBounds(visiblePoints.map(p=>[p.lat,p.lng]));
+      map.invalidateSize(false);
+      map.fitBounds(bounds, {padding:[35,35], maxZoom:13});
+    }
+
+    document.querySelectorAll('.day-buttons button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.day-buttons button').forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        activeDay = btn.dataset.day;
+        updateVisibility();
+      });
+    });
+
+    document.querySelectorAll('.filters input').forEach(cb => {
+      cb.addEventListener('change', () => {
+        typeEnabled[cb.dataset.type] = cb.checked;
+        updateVisibility();
+      });
+    });
+
+    document.getElementById('fitAll').addEventListener('click', fitVisible);
+    document.getElementById('toggleRoutes').addEventListener('click', (e) => {
+      routesVisible = !routesVisible;
+      e.target.textContent = routesVisible ? '경로선 숨기기' : '경로선 보이기';
+      updateVisibility();
+    });
+
+    // Recalculate Leaflet's viewport whenever the grid/map container changes size.
+    const mapEl = document.getElementById('map');
+    if ('ResizeObserver' in window) {
+      const resizeObserver = new ResizeObserver(() => map.invalidateSize(false));
+      resizeObserver.observe(mapEl);
+    }
+    window.addEventListener('resize', () => map.invalidateSize(false));
+    window.addEventListener('load', () => {
+      requestAnimationFrame(() => {
+        map.invalidateSize(false);
+        fitVisible();
+      });
+    });
+
+    fitVisible();
+  </script>
+</body>
+</html>
